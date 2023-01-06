@@ -42,3 +42,37 @@ func (r *repository) GetUserByEmail(ctx context.Context, email string) (*User, e
 
 	return &u, nil
 }
+
+func (r *repository)CheckUsernameExist(ctx context.Context , username string) (bool,error){
+	query:="SELECT username FROM users WHERE username = $1"
+	rows,err:=r.db.QueryContext(ctx , query , username)
+	 
+	 //check if there is error first
+	 if err != nil {
+        return false, err
+    }
+    defer rows.Close()
+	//it's mean that the username is already exist
+	if rows.Next() {
+        return false, nil
+    }
+	//it's mean that the username doesn't  exist
+	return true,nil
+}
+
+func (r *repository)CheckEmailExist(ctx context.Context , email string)(bool,error){
+	query:="SELECT email FROM users WHERE email = $1"
+	rows, err := r.db.QueryContext(ctx, query, email)
+	 //check if there is error first 
+	 if err != nil {
+        return false, err
+    }
+    defer rows.Close()
+	//mean that the email does  exist
+	if rows.Next() {
+        return false, nil
+    }
+	//mean that the email doesn't  exist 
+	return true,nil
+}
+
