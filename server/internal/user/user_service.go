@@ -5,6 +5,7 @@ import (
 	"server/util"
 	"strconv"
 	"time"
+	"fmt"
 
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -29,6 +30,11 @@ func (s *service) CreateUser(c context.Context, req *CreateUserReq) (*CreateUser
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
+	//check username and email exist or not
+	if err := s.CheckUsernameAndEmailExist(ctx, req.Username, req.Email); err != nil {
+		return nil, err
+	}
+	
 	hashedPassword, err := util.HashPassword(req.Password)
 	if err != nil {
 		return nil, err
@@ -89,4 +95,26 @@ func (s *service) Login(c context.Context, req *LoginUserReq) (*LoginUserRes, er
 	}
 
 	return &LoginUserRes{accessToken: ss, Username: u.Username, ID: strconv.Itoa(int(u.ID))}, nil
+}
+
+func (s *service) CheckUsernameAndEmailExist(ctx context.Context, username, email string) error {
+    //check username is exist or not
+    checkUsernameExist, err := s.Repository.CheckUsernameExist(ctx, username)
+    if err != nil {
+        return err
+    }
+    if !checkUsernameExist {
+        return fmt.Errorf("the username is already exists")
+    }
+
+    //check email is exist or not
+    checkEmailExist, err := s.Repository.CheckEmailExist(ctx, email)
+    if err != nil {
+        return err
+    }
+    if !checkEmailExist {
+        return fmt.Errorf("the email is already exists")
+    }
+
+    return nil
 }
