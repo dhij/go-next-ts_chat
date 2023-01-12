@@ -1,4 +1,4 @@
-import { useState, useRef, useContext, useEffect } from 'react'
+import React, { useState, useRef, useContext, useEffect } from 'react'
 import ChatBody from '../../components/chat_body'
 import { WebsocketContext } from '../../modules/websocket_provider'
 import { useRouter } from 'next/router'
