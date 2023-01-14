@@ -35,6 +35,8 @@ type LoginUserRes struct {
 type Repository interface {
 	CreateUser(ctx context.Context, user *User) (*User, error)
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
+	CheckUsernameExist(ctx context.Context , username string) (bool,error)
+	CheckEmailExist(ctx context.Context , email string) (bool,error)
 }
 
 type Service interface {
